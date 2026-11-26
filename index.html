@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Marathon Daily</title>
+<meta name="description" content="Daily marathon training plan, paces, fuelling and mobility routines.">
+<meta name="theme-color" content="#0D0E10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Marathon Daily">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <div id="profileScreen" class="profile-screen">
+    <div class="profile-screen-inner">
+      <div class="brand">MARATHON <span>DAILY</span></div>
+      <p class="profile-screen-sub">Who's training?</p>
+      <div class="profile-list" id="profileList"></div>
+      <div class="profile-add-row">
+        <input type="text" id="newProfileName" placeholder="Add your name" maxlength="24" autocomplete="off">
+        <button id="addProfileBtn">Add</button>
+      </div>
+
+      <div class="data-box">
+        <div class="data-title">Your data on this device</div>
+        <p class="data-sub">Everything you tick and log lives in this browser. Back it up before clearing browser data or switching phones, then restore it on the new one.</p>
+        <div class="data-actions">
+          <button id="backupBtn" class="data-btn">Back up to a file</button>
+          <button id="restoreBtn" class="data-btn">Restore from a file</button>
+          <input type="file" id="restoreInput" accept="application/json,.json" hidden>
+        </div>
+        <p class="data-status" id="dataStatus" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="mainApp" hidden>
+
+  <header class="app-header">
+    <div class="header-top">
+      <div class="brand-row">
+        <div class="brand">MARATHON <span>DAILY</span></div>
+        <div class="profile-chip" id="activeProfileName">—</div>
+      </div>
+      <div class="header-actions">
+        <button id="switchProfileBtn" class="ghost-btn">Switch</button>
+        <button id="todayBtn" class="today-btn">Today</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="planView" class="view">
+
+    <div class="install-banner" id="installBanner" hidden>
+      <span>Install Marathon Daily on your phone - it opens like an app and works with no signal.</span>
+      <button id="installBtn" class="install-btn">Install</button>
+      <button id="installDismiss" class="install-x" aria-label="Dismiss">×</button>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-row">
+        <div class="phase-name" id="phaseName">—</div>
+        <div class="phase-week" id="phaseWeek">—</div>
+      </div>
+      <div class="phase-bar"><div class="phase-bar-fill" id="phaseBarFill" style="width:0%"></div></div>
+      <div class="phase-meta">
+        <span id="raceCountdown">—</span>
+        <span id="adherenceStat">—</span>
+      </div>
+    </div>
+
+  <nav class="week-rail" id="weekRail" aria-label="This week"></nav>
+  <div id="ankleCheck"></div>
+
+  <main id="mainView">
+    <div id="startBanner"></div>
+
+    <div class="day-nav">
+      <button class="day-nav-btn" id="prevDayBtn" aria-label="Previous day">‹</button>
+      <div class="day-heading">
+        <div class="dh-name" id="dhName">—</div>
+        <div class="dh-date" id="dhDate">—</div>
+      </div>
+      <button class="day-nav-btn" id="nextDayBtn" aria-label="Next day">›</button>
+    </div>
+
+    <div class="swap-row">
+      <button class="swap-toggle-btn" id="swapToggleBtn" hidden>⇄ Swap with another day this week</button>
+      <div class="swap-locked-note" id="swapLockedNote" hidden>Swapping is locked during race week.</div>
+    </div>
+    <div class="swap-panel" id="swapPanel" hidden></div>
+
+    <div class="holiday-row" id="holidayRow">
+      <button class="holiday-toggle-btn" id="holidayToggleBtn">🏖 Mark as Holiday Mode</button>
+    </div>
+    <div class="holiday-panel" id="holidayPanel" hidden>
+      <p class="holiday-panel-text">This day is excused — it won't break your streak or count against adherence.</p>
+      <input type="text" id="holidayReasonInput" placeholder="Reason (optional) — e.g. travelling, no gym access" maxlength="80" autocomplete="off">
+    </div>
+
+    <div id="fuelToday"></div>
+
+    <section class="session-card" id="sessionCard">
+      <span class="session-tag" id="sessionTag">—</span>
+      <span class="swapped-badge" id="swappedBadge" hidden>⇄ moved</span>
+      <span class="swapped-badge ankle-badge" id="ankleBadge" hidden>Ankle week</span>
+      <h1 class="session-title" id="sessionTitle">—</h1>
+      <p class="session-subtitle" id="sessionSubtitle"></p>
+      <div class="session-links" id="sessionLinks"></div>
+      <div class="station-rail" id="stationRail"></div>
+      <div id="ownSlot"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="streak-row">
+      <div class="streak-card">
+        <div class="streak-num" id="streakNum">0</div>
+        <div class="streak-label">Day Streak</div>
+      </div>
+      <div class="streak-card">
+        <div class="streak-num" id="doneCount">0</div>
+        <div class="streak-label">Sessions Done</div>
+      </div>
+      <div class="streak-card">
+        <div class="streak-num" id="pctNum">0%</div>
+        <div class="streak-label">Block Adherence</div>
+      </div>
+    </div>
+  </footer>
+
+  </div>
+
+  <div id="pacesView" class="view" hidden></div>
+  <div id="fuelView" class="view" hidden></div>
+  <div id="mobilityView" class="view" hidden></div>
+
+  <nav class="tabbar" aria-label="Sections">
+    <button class="tab is-active" data-tab="plan" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+      <span>Plan</span>
+    </button>
+    <button class="tab" data-tab="paces">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="7.5"/><path d="M12 13l3.5-3M10 3h4M12 3v2.5"/></svg>
+      <span>Paces</span>
+    </button>
+    <button class="tab" data-tab="fuel">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5c3.2 4 5.5 7.1 5.5 10.2A5.5 5.5 0 0 1 6.5 13.7C6.5 10.6 8.8 7.5 12 3.5z"/></svg>
+      <span>Fuel</span>
+    </button>
+    <button class="tab" data-tab="mobility">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"/><path d="M12.5 7.5l-2 6 4.5 2.5 1 5M10.5 13.5L6 20M11.8 9.5l5.2-1.5M11.5 9.8L6.5 8"/></svg>
+      <span>Mobility</span>
+    </button>
+  </nav>
+
+  </div>
+
+  <div id="sheet" class="sheet" hidden>
+    <div class="sheet-backdrop" data-sheet-close></div>
+    <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sheet-grip" aria-hidden="true"></div>
+      <div class="sheet-head">
+        <div>
+          <h2 class="sheet-title" id="sheetTitle">—</h2>
+          <p class="sheet-meta" id="sheetMeta"></p>
+        </div>
+        <button class="sheet-close" id="sheetCloseBtn" data-sheet-close aria-label="Close">×</button>
+      </div>
+      <div class="sheet-body" id="sheetBody"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/pictograms.js"></script>
+<script src="js/pictograms-mobility.js"></script>
+<script src="js/pictograms-running.js"></script>
+<script src="js/program-data.js"></script>
+<script src="js/routines-data.js"></script>
+<script src="js/timebox.js"></script>
+<script src="js/paces.js"></script>
+<script src="js/fuel-data.js"></script>
+<script src="js/fuel.js"></script>
+<script src="js/mobility.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
